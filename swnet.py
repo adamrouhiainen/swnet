@@ -119,11 +119,11 @@ class net(pl.LightningModule):
         """
         output_fft = torch.fft.fft(output.squeeze().type(torch.float32))
         target_fft = torch.fft.fft(target.squeeze())
-        diff_sq = torch.abs(output_fft)**2 - torch.abs(target_fft)**2
+        diff = output_fft - target_fft
         
-        diff_sq_filtered = diff_sq*low_pass_filter
+        diff = diff*low_pass_filter
         
-        loss = torch.mean(diff_sq_filtered/k_cubed_tensor)
+        loss = torch.mean(torch.real(torch.conj(diff)*diff)/k_cubed_tensor)
         
         loss_list.append(loss.detach().cpu().numpy())
         
